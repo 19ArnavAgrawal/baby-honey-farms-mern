@@ -14,10 +14,16 @@ export const connectDB = async () => {
   // 1. First attempt: Connect to primary MongoDB URI (MongoDB Atlas or local daemon)
   try {
     const conn = await mongoose.connect(primaryUri, {
-      serverSelectionTimeoutMS: 3000,
+      serverSelectionTimeoutMS: 5000,
     });
     isConnected = true;
     console.log(`[MongoDB] Connected successfully to host: ${conn.connection.host}`);
+    try {
+      const { seedData } = await import('../scripts/seedData.js');
+      await seedData();
+    } catch (sErr) {
+      console.warn(`[MongoDB Warning] Initial auto-seed check skipped: ${sErr.message}`);
+    }
     return;
   } catch (err) {
     console.warn(`[MongoDB Warning] Primary connection failed: ${err.message}`);

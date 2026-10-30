@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: baby-honey-farms
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm run build:all
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BUSINESS_WHATSAPP_NUMBER
+        value: "8397858496"
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: admin@babyhoneyfarms.com
+      - key: ADMIN_PASSWORD
+        sync: false
