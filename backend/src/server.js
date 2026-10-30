@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 import { connectDB } from './config/db.js';
@@ -96,11 +97,20 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/categories', categoryRoutes);
 
 // In production, serve frontend build if present
-const frontendDist = path.join(__dirname, '../../../frontend/dist');
-const altFrontendDist = path.join(__dirname, '../../frontend/dist');
+const possibleDistPaths = [
+  path.resolve(__dirname, '../../frontend/dist'),
+  path.resolve(__dirname, '../../../frontend/dist'),
+  path.resolve(process.cwd(), 'frontend/dist'),
+  path.resolve(process.cwd(), '../frontend/dist'),
+];
 
-import fs from 'fs';
-const staticDir = fs.existsSync(frontendDist) ? frontendDist : fs.existsSync(altFrontendDist) ? altFrontendDist : null;
+let staticDir = null;
+for (const p of possibleDistPaths) {
+  if (fs.existsSync(p)) {
+    staticDir = p;
+    break;
+  }
+}
 
 if (staticDir) {
   app.use(express.static(staticDir));
@@ -116,8 +126,8 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || CONFIG.PORT;
 
-const server = app.listen(PORT, () => {
-  console.log(`[Server] Baby Honey Farms API running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`[Server] Baby Honey Farms API running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT} (0.0.0.0)`);
 });
 
 export { app, server };

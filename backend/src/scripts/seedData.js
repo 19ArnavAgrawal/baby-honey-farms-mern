@@ -236,15 +236,18 @@ export async function seedData() {
   await Product.deleteMany({});
   await Product.insertMany(productsData);
 
-  const existingAdmin = await User.findOne({ email: 'admin@babyhoneyfarms.com' });
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@babyhoneyfarms.com';
+  const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@123';
+
+  const existingAdmin = await User.findOne({ email: adminEmail });
   if (!existingAdmin) {
     const admin = new User({
       name: 'Farm Master Admin',
-      email: 'admin@babyhoneyfarms.com',
-      password: 'Admin@123',
+      email: adminEmail,
+      password: adminPassword,
       role: 'admin',
     });
     await admin.save();
-    console.log('[SeedData] Admin user created: admin@babyhoneyfarms.com / Admin@123');
+    console.log(`[SeedData] Admin user created for: ${adminEmail}`);
   }
 }
