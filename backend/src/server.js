@@ -24,6 +24,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Trust Render/proxy reverse proxy (required for express-rate-limit and accurate IP detection)
+app.set('trust proxy', 1);
+
 // Database Connection
 connectDB();
 
