@@ -30,6 +30,13 @@ async function waitForDb() {
   while (mongoose.connection.readyState !== 1) {
     await new Promise((r) => setTimeout(r, 200));
   }
+  // Wait until products are seeded
+  const { Product } = await import('../models/Product.js');
+  let retries = 0;
+  while ((await Product.countDocuments()) === 0 && retries < 20) {
+    await new Promise((r) => setTimeout(r, 200));
+    retries++;
+  }
 }
 
 async function runTests() {
